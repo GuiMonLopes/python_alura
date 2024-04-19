@@ -1,3 +1,5 @@
+from modelos.avaliacao  import Avaliacao
+
 class Restaurante:
 
     restaurantes = []
@@ -6,6 +8,7 @@ class Restaurante:
         self._nome = nome.title()
         self._categoria = categoria.upper()
         self._status = False
+        self._avaliacao = []
         Restaurante.restaurantes.append(self)
 
     def __str__(self):
@@ -13,9 +16,9 @@ class Restaurante:
     
     @classmethod
     def listar_restaurentes(cls):
-        print(f'{'Nome do Restaurante'.ljust(33)} | {'Categoria'.ljust(31)} | {'Status'}')
+        print(f'{'Nome do Restaurante'.ljust(33)} | {'Categoria'.ljust(31)} | {'Avaliações'.ljust(20)}| {'Status'}')
         for restaurante in cls.restaurantes:
-            print(f'Restaurante: {restaurante._nome.ljust(20)} | Categoria: {restaurante._categoria.ljust(20)} | Status: {restaurante._status}')
+            print(f'Restaurante: {restaurante._nome.ljust(20)} | Categoria: {restaurante._categoria.ljust(20)} | Avaliações: {restaurante.media_avaliacoes.ljust(7)} | Status: {restaurante.status}')
 
     @property
     def status(self):
@@ -24,10 +27,19 @@ class Restaurante:
     def alternar_status(self):
         self._status = not self._status
 
+    def receber_avaliacao(self, cliente, nota):
+        if 0< nota <5:
+            avaliacao = Avaliacao(cliente, nota)
+            self._avaliacao.append(avaliacao)
+        
 
-restaurante_praca = Restaurante('praça','Gourmet')
-restaurante_mexicano = Restaurante('Mexican Food','Mexicana')
-restaurante_japones = Restaurante('Sushi Food','Japonesa')
-restaurante_mexicano.alternar_status()
+    @property
+    def media_avaliacoes(self):
+        if not self._avaliacao:
+            return '-'
+        soma_das_notas = sum(avaliacao._nota for avaliacao in self._avaliacao)
+        quantidade_de_notas = len(self._avaliacao)
+        media = round(soma_das_notas/quantidade_de_notas, 1)
+        return str(media)
 
-Restaurante.listar_restaurentes()
+    
